@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from PyPDF2 import PdfMerger
+#from PyPDF2 import PdfMerger
 
 st.set_page_config(page_title="Home")
 
