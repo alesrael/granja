@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-#from PyPDF2 import PdfMerger
 
 st.set_page_config(page_title="Home")
 
@@ -29,6 +28,6 @@ filtered_df = df[df['Raça'] == selected_raça]
 
 # Mostrar o DataFrame filtrado
 st.write(f'DataFrame filtrado para a raça {selected_raça}:')
-st.write(filtered_df)
+st.write(filtered_df, use_column_width=True)
 
 st.dataframe(df)
