@@ -2,5 +2,4 @@ streamlit
 pandas
 plotly==5.18.0
 PyPDF2
-streamlit_gsheets
 GSheetsConnection
