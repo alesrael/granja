@@ -5,3 +5,4 @@ plotly==5.18.0
 PyPDF2
 streamlit_gsheets
 st-gsheets-connection
+_tkinter
