@@ -1,1 +1,1 @@
-matplotlib
+PyPDF2
