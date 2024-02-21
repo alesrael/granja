@@ -1,44 +1,37 @@
-import streamlit as st
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 import pandas as pd
-import plotly.express as px
 
-st.set_page_config(page_title="Home", layout="wide")
+# Supondo que você tenha um DataFrame chamado 'df' com as informações desejadas
+# Aqui está um exemplo fictício
+data = {'Brinco': [101, 102, 103],
+        'Previsão de Cio': ['2024-02-20', '2024-02-21', '2024-02-22'],
+        'Idade no Dia da Previsão': [20, 22, 18]}
+df = pd.DataFrame(data)
 
-# Variaveis
-#a = st.sidebar.radio('Menu:',["Pagina 1","Pagina 2"])
-tabela = pd.read_csv("Leitoas-2024-01-08.csv", sep=",")
+# Nome do arquivo PDF de saída
+output_pdf = 'informacoes_laiteiras.pdf'
 
-df = pd.DataFrame(tabela)
+# Função para criar o PDF
+def create_pdf(df, output_pdf):
+    c = canvas.Canvas(output_pdf, pagesize=letter)
 
-raca_unica = df['Raça'].unique()
-raca = st.sidebar.multiselect('Selecione a Raça', raca_unica)
+    # Itera sobre as linhas do DataFrame para adicionar informações ao PDF
+    for index, row in df.iterrows():
+        brinco = str(row['Brinco'])
+        previsao_cio = str(row['Previsão de Cio'])
+        idade = str(row['Idade no Dia da Previsão'])
 
-df['Ultimo cio'] = pd.to_datetime(df['Ultimo cio'])
+        # Adiciona informações ao PDF
+        c.drawString(100, 700, f'Brinco: {brinco}')
+        c.drawString(100, 680, f'Previsão de Cio: {previsao_cio}')
+        c.drawString(100, 660, f'Idade no Dia da Previsão: {idade}')
 
-# Adicionar filtro de data no Streamlit
-data_inicio = st.sidebar.date_input('Selecione a data de início:', format="DD/MM/YYYY")
-data_fim = st.sidebar.date_input('Selecione a data de fim:', format="DD/MM/YYYY")
+        # Adiciona uma quebra de página para a próxima linha do DataFrame
+        c.showPage()
 
-# Filtrar o DataFrame com base nas datas selecionadas
-df = df[(df['Ultimo cio'] >= pd.to_datetime(data_inicio)) & (df['Ultimo cio'] <= pd.to_datetime(data_fim))]
+    # Salva o PDF
+    c.save()
 
-# Filtrar o DataFrame com base na raça selecionada
-df = df[df['Raça'].isin(raca)]
-
-idade = st.sidebar.number_input("Idade maior que:", value=225)
-df = df[df['Idade']>= idade]
-
-#reseta o indice da tabela
-df = df.reset_index(drop=True)
-
-# Mostrar o DataFrame filtrado
-st.write(f'DataFrame filtrado para a raça {raca}:')
-st.write(df, use_column_width=True)
-
-cores_por_raça = {
-                    'TLLZZ - TN70': 'blue',
-                    'TZZZZ - AVÓ':'red'
-}
-
-plotgrafico = px.scatter(tabela, x="Idade", y="TSI", color="Raça", color_discrete_map=cores_por_raça)
-st.plotly_chart(plotgrafico, use_container_width=True)
+# Chama a função para criar o PDF
+create_pdf(df, output_pdf)
