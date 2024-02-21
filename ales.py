@@ -1,37 +1,44 @@
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-import pandas as pd
+import streamlit as st
+from PyPDF2 import PdfMerger
 
-# Supondo que você tenha um DataFrame chamado 'df' com as informações desejadas
-# Aqui está um exemplo fictício
-data = {'Brinco': [101, 102, 103],
-        'Previsão de Cio': ['2024-02-20', '2024-02-21', '2024-02-22'],
-        'Idade no Dia da Previsão': [20, 22, 18]}
-df = pd.DataFrame(data)
+st.set_page_config(page_title="Unir PDFs", page_icon="3616504.png")
 
-# Nome do arquivo PDF de saída
-output_pdf = 'informacoes_laiteiras.pdf'
+#css e html
+st.markdown("""
+            <style>
+                .st-emotion-cache-9ycgxx {
+                    margin-bottom: 0.25rem;
+                    display:none;
+                }
+            </style>
+            
+            """, unsafe_allow_html=True)
 
-# Função para criar o PDF
-def create_pdf(df, output_pdf):
-    c = canvas.Canvas(output_pdf, pagesize=letter)
+def merge_pdfs(uploaded_files):
+    merged_pdf = PdfMerger()
 
-    # Itera sobre as linhas do DataFrame para adicionar informações ao PDF
-    for index, row in df.iterrows():
-        brinco = str(row['Brinco'])
-        previsao_cio = str(row['Previsão de Cio'])
-        idade = str(row['Idade no Dia da Previsão'])
+    for file in uploaded_files:
+        merged_pdf.append(file)
 
-        # Adiciona informações ao PDF
-        c.drawString(100, 700, f'Brinco: {brinco}')
-        c.drawString(100, 680, f'Previsão de Cio: {previsao_cio}')
-        c.drawString(100, 660, f'Idade no Dia da Previsão: {idade}')
+    output_filename = 'PDFs/MESCLADO.pdf'
+    with open(output_filename, 'wb') as output_file:
+        merged_pdf.write(output_file)
 
-        # Adiciona uma quebra de página para a próxima linha do DataFrame
-        c.showPage()
+    return output_filename
 
-    # Salva o PDF
-    c.save()
+def main():
+    st.title("Mesclar PDFs")
 
-# Chama a função para criar o PDF
-create_pdf(df, output_pdf)
+    uploaded_files = st.file_uploader("Selecione os arquivos PDF para mesclar", type="pdf", accept_multiple_files=True)
+
+    if uploaded_files:
+        st.write("Arquivos selecionados:")
+        for file in uploaded_files:
+            st.write(file.name)
+
+        if st.button("Mesclar PDFs"):
+            output_filename = merge_pdfs(uploaded_files)
+            st.success("Para acessar o arquivo digite **pdfs** no prompt do Anaconda")
+            #st.success(f"PDFs mesclados com sucesso. [Clique aqui para baixar o arquivo mesclado]({output_filename})")
+if __name__ == "__main__":
+    main()
